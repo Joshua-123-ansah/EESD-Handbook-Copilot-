@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Handbook Assistant</title>
+    <link rel="stylesheet" href="/static/style.css" />
+  </head>
+  <body>
+    <div class="app">
+      <header class="header">
+        <div class="brand">
+          <div class="dot"></div>
+          <div>
+            <div class="title">Handbook Assistant</div>
+            <div class="subtitle">Ask about the EESD Graduate Student Handbook</div>
+          </div>
+        </div>
+      </header>
+
+      <main class="chat">
+        <div class="messages" id="messages"></div>
+      </main>
+
+      <footer class="composer">
+        <div class="avatar-col">
+          <div class="avatar" aria-hidden="true">:-)</div>
+          <div class="avatar-label">Assistant</div>
+        </div>
+
+        <div class="input-col">
+          <form id="chat-form" class="chat-form">
+            <input
+              id="message-input"
+              type="text"
+              placeholder="Type your question..."
+              autocomplete="off"
+            />
+            <button type="button" id="mic-btn" class="mic-btn" title="Speak your question">
+              Start Voice
+            </button>
+            <button type="submit">Send</button>
+          </form>
+          <div class="hint" id="voice-status">Answers are grounded in the handbook and include page citations.</div>
+        </div>
+      </footer>
+    </div>
+
+    <script src="/static/app.js"></script>
+  </body>
+</html>
+
