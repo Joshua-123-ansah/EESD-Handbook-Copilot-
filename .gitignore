@@ -1,8 +1,37 @@
+# Python
 __pycache__/
-*.pyc
-.DS_Store
-chroma_db/
-.env
-.env.example
-.venv
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+pip-log.txt
 
+# Virtual environments (never commit)
+.venv/
+venv/
+ENV/
+env/
+
+# Secrets and local env variants — keeps real keys and templates out of the repo if you prefer
+.env
+.env.*
+
+# Local vector DB / generated indexes
+chroma_db/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs / temp
+*.log
+tmp/
+temp/
