@@ -1,0 +1,12 @@
+# Render Blueprint: https://render.com/docs/blueprint-spec
+# After deploy, share: https://YOUR-SERVICE.onrender.com/  and  .../portfolio/
+
+services:
+  - type: web
+    name: eesd-handbook-assistant
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    plan: free
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false

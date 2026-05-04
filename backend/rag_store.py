@@ -12,7 +12,12 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 load_dotenv(dotenv_path=str(PROJECT_ROOT / ".env"))
 HANDBOOK_PATH = PROJECT_ROOT / "EESD_Handbook_2024-2025AY-FINAL.pdf"
 
-CHROMA_DIR = Path(os.getenv("CHROMA_DIR", "chroma_db"))
+_chroma_env = os.getenv("CHROMA_DIR", "chroma_db")
+CHROMA_DIR = (
+    Path(_chroma_env)
+    if Path(_chroma_env).is_absolute()
+    else (PROJECT_ROOT / _chroma_env)
+)
 TOP_K = int(os.getenv("TOP_K", "8"))
 
 OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL", "text-embedding-3-small")

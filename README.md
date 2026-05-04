@@ -31,7 +31,12 @@ Then fill in `OPENAI_API_KEY` in `.env`.
 uvicorn backend.app:app --reload --port 8000
 ```
 
-Open: `http://localhost:8000`
+Open: `http://localhost:8000`  
+Portfolio: `http://localhost:8000/portfolio/`
+
+## Host for faculty (one link)
+
+See **[DEPLOY-GITHUB-RENDER.md](./DEPLOY-GITHUB-RENDER.md)** for pushing to GitHub and deploying on Render, or **[DEPLOY.md](./DEPLOY.md)** for Docker details and caveats. You set `OPENAI_API_KEY` on the host, deploy, then share `https://your-service.onrender.com/` (chat) and `https://your-service.onrender.com/portfolio/` (writeup). The handbook PDF must be in the repo root for the Docker build.
 
 ## Important notes
 

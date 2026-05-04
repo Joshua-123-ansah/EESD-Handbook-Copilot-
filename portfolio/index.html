@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EGR 535 · handbook chatbot (portfolio)</title>
+    <meta name="description" content="Portfolio writeup for a small handbook assistant with voice." />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="portfolio.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="banner">
+      <div class="banner-inner">
+        <p class="banner-course">EGR 535 · Innovative Design · Path B</p>
+        <nav class="banner-nav" aria-label="On this page">
+          <a href="#main">Top</a>
+          <a href="#problem">Problem</a>
+          <a href="#voice">Voice</a>
+          <a href="#routing">Routing</a>
+          <a href="#build">Build</a>
+          <a href="#showcase">Photos</a>
+          <a href="#rubric-note">Rubric</a>
+          <a id="chatbot-link-nav" href="/">Chatbot</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="sheet">
+      <h1 class="doc-title">Handbook chatbot</h1>
+      <p class="doc-sub">
+        Visual portfolio for the graduate handbook assistant. I tried to keep the tone plain and a little
+        awkward on purpose, because that is closer to how I actually talk about the project.
+      </p>
+
+      <p id="file-warning" class="file-note" hidden>
+        If you opened this file from disk, use <strong>http://localhost:8000/portfolio/</strong> after you start the server so images and links work.
+      </p>
+
+      <p class="btn-line">
+        <a id="chatbot-link" class="link-button" href="/">Open the assistant</a>
+      </p>
+
+      <section id="problem" class="block">
+        <h2>Problem</h2>
+        <p>
+          I lose things in PDFs. Not because I am careless, but because a handbook is long and my questions do
+          not arrive as neat keywords. They arrive as “wait, what was the rule about…” at 11pm. For this class
+          we were supposed to think about impact beyond the usual ways people hear about research, and I kept
+          coming back to something boring but real: the document already exists. Finding the right paragraph is
+          the hard part.
+        </p>
+        <p>
+          So I built a chat front end on top of the EESD PhD Graduate Student Handbook. You ask in normal
+          language. The app pulls chunks from the indexed PDF and tries to answer from that text. When it is
+          not in there, it is supposed to say so instead of bluffing.
+        </p>
+      </section>
+
+      <section id="voice" class="block">
+        <h2>Voice (the feature, and why it showed up)</h2>
+        <p>
+          Voice was not in my first sketch. I was thinking screen first. When I talked to people in class about
+          the idea, a few of them kept coming back to audio: eyes tired, multitasking, or just not wanting to
+          read another wall of policy on a laptop. That stuck. I wired speech to text and text to speech into
+          the same little app so it stayed one demo, not a side project I pretend counts.
+        </p>
+      </section>
+
+      <section id="routing" class="block">
+        <h2>The part that made me feel dumb (then fixed)</h2>
+        <p>
+          First version sent almost everything through handbook search. Someone would type “how are you” as a
+          joke or a habit, and the assistant would still go hunting in the PDF and end up saying it could not
+          find that in the handbook. Technically correct. Socially weird. I did not like how that felt when I
+          watched other people try it.
+        </p>
+        <p>
+          I added routing so each message gets sorted into chitchat versus handbook lookup, using the recent
+          conversation so short follow ups still make sense. Small talk goes to a normal conversation prompt.
+          Handbook questions still go through retrieval, a rewrite step for messy follow ups, relevance scoring,
+          and citations when the match is actually good. If the match is bad, the app backs off instead of
+          forcing a page number.
+        </p>
+      </section>
+
+      <section id="build" class="block">
+        <h2>What is actually in the repo</h2>
+        <p>Nothing fancy, just pieces that had to work together:</p>
+        <ul class="plain-list">
+          <li>PDF chunked and stored in Chroma so search is over the handbook, not over my memory.</li>
+          <li>An LLM step that rewrites the latest question using a short window of chat history so “what about exceptions” is not orphaned.</li>
+          <li>A similarity score threshold so weak hits do not get treated like gospel.</li>
+          <li>Separate prompts for handbook answers versus casual replies so the tone matches what the user is doing.</li>
+          <li>Voice endpoints in the same FastAPI app as the page you are reading.</li>
+        </ul>
+        <p class="btn-line">
+          <a id="chatbot-link-2" class="link-button" href="/">Try it yourself</a>
+        </p>
+      </section>
+
+      <section id="showcase" class="block">
+        <h2>Showcase</h2>
+        <p>
+          I did the gallery walk with our class. I am not naturally
+          great at pitching. I practiced saying three things in plain order: what the tool is, who I built it
+          for, and why voice plus grounded answers matter for stress and trust. People asked good questions.
+          One was about hallucinated answers. I showed how citations show up when retrieval is strong, and what
+          happens when the score is low. Another was about updating the handbook. I said the honest version:
+          this is a class prototype tied to one PDF file, and anything “real” would need someone in the program
+          to own updates. I would rather admit that than oversell it.
+        </p>
+        <div class="gallery" role="group" aria-label="Photographs from innovation showcase">
+          <figure class="shot">
+            <img src="/imgs/img_1.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+          <figure class="shot">
+            <img src="/imgs/img_2.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+          <figure class="shot">
+            <img src="/imgs/img_3.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+          <figure class="shot">
+            <img src="/imgs/img_4.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+          <figure class="shot">
+            <img src="/imgs/img_5.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+          <figure class="shot">
+            <img src="/imgs/img_6.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+          <figure class="shot">
+            <img src="/imgs/img_7.jpeg" alt="" loading="lazy" width="400" height="225" />
+          </figure>
+        </div>
+      </section>
+
+      <section class="block">
+        <h2>What I would change next time</h2>
+        <p>
+          I would start explanations even slower for strangers. I would budget more time for retrieval tuning
+          earlier instead of noticing awkward answers late. If this ever left the classroom, I would want a real
+          conversation with the program about maintenance and accessibility testing, not just my assumptions.
+        </p>
+      </section>
+
+      <section id="rubric-note" class="block rubric-plain">
+        <h2>Note for grading (EGR 535 rubric)</h2>
+        <p>
+          Audience and reach: EESD PhD students navigating the handbook, plus voice after class feedback.
+          Creativity and risk: routing split and API work I had not done before, plus being strict about weak
+          retrieval. Prototype communication: simple UI, grounded answers, citations when retrieval wins.
+          Showcase: photos above, plus the pitch and two questions described in the showcase section. Reflection:
+          the routing mistake, honesty about limits, and what I would change next time.
+        </p>
+      </section>
+
+      <p class="btn-line">
+        <a id="chatbot-link-3" class="link-button" href="/">Chatbot again</a>
+      </p>
+
+      <footer class="closing">
+        <p>
+          Student work. Handbook belongs to the program and authors. Thanks to classmates for blunt feedback and
+          to faculty and visitors who stopped by the table.
+        </p>
+      </footer>
+    </main>
+
+    <script>
+      (function () {
+        var isFile = window.location.protocol === "file:";
+        var warn = document.getElementById("file-warning");
+        if (isFile && warn) warn.hidden = false;
+        var base = isFile ? "http://localhost:8000" : window.location.origin;
+        document
+          .querySelectorAll("#chatbot-link, #chatbot-link-2, #chatbot-link-3, #chatbot-link-nav")
+          .forEach(function (el) {
+            el.href = base + "/";
+          });
+      })();
+    </script>
+  </body>
+</html>

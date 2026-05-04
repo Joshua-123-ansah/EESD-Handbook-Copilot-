@@ -1,7 +1,10 @@
+import asyncio
 import os
+import threading
+from contextlib import asynccontextmanager
 from io import BytesIO
 from pathlib import Path
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -38,8 +41,46 @@ OPENAI_STT_MODEL = os.getenv("OPENAI_STT_MODEL", "gpt-4o-mini-transcribe")
 OPENAI_TTS_MODEL = os.getenv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts")
 OPENAI_TTS_VOICE = os.getenv("OPENAI_TTS_VOICE", "alloy")
 
+_sessions: Dict[str, List[ChatMessage]] = {}
 
-app = FastAPI(title="EESD Handbook RAG Chatbot", version="0.1.0")
+_retriever = None
+_vectorstore = None
+_llm = None
+_openai_client = None
+_built_new = False
+_rag_lock = threading.Lock()
+_rag_error: Optional[str] = None
+
+
+def _load_rag_sync() -> None:
+    """Build or load Chroma once. Safe to call from many threads; captures errors for /health."""
+    global _vectorstore, _retriever, _built_new, _rag_error
+    with _rag_lock:
+        if _vectorstore is not None:
+            return
+        if _rag_error is not None:
+            return
+        try:
+            vectorstore, built_new = ensure_vectorstore()
+            _retriever = get_retriever(vectorstore)
+            _vectorstore = vectorstore
+            _built_new = built_new
+        except Exception as exc:
+            _rag_error = str(exc)
+
+
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    global _llm, _openai_client
+    _llm = ChatOpenAI(model=OPENAI_MODEL, temperature=0.2)
+    _openai_client = OpenAI()
+    # Load RAG in a thread so /health and static pages respond while Chroma builds (important for cloud deploys).
+    loop = asyncio.get_running_loop()
+    loop.run_in_executor(None, _load_rag_sync)
+    yield
+
+
+app = FastAPI(title="EESD Handbook RAG Chatbot", version="0.1.0", lifespan=_lifespan)
 
 # If you later host frontend separately, this allows the browser to call the API.
 app.add_middleware(
@@ -50,33 +91,31 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-_sessions: Dict[str, List[ChatMessage]] = {}
-
-_retriever = None
-_vectorstore = None
-_llm = None
-_openai_client = None
-_built_new = False
-
 static_dir = FRONTEND_DIR / "static"
 if static_dir.exists():
     app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
 
+portfolio_dir = PROJECT_ROOT / "portfolio"
+if portfolio_dir.exists():
+    app.mount(
+        "/portfolio",
+        StaticFiles(directory=str(portfolio_dir), html=True),
+        name="portfolio",
+    )
 
-@app.on_event("startup")
-def _startup():
-    global _retriever, _vectorstore, _llm, _openai_client, _built_new
-    vectorstore, built_new = ensure_vectorstore()
-    _built_new = built_new
-    _retriever = get_retriever(vectorstore)
-    _vectorstore = vectorstore
-    _llm = ChatOpenAI(model=OPENAI_MODEL, temperature=0.2)
-    _openai_client = OpenAI()
+imgs_dir = PROJECT_ROOT / "imgs"
+if imgs_dir.exists():
+    app.mount("/imgs", StaticFiles(directory=str(imgs_dir)), name="imgs")
 
 
 @app.get("/health")
 def health():
-    return {"ok": True, "chroma_built_new": _built_new}
+    return {
+        "ok": True,
+        "rag_ready": _vectorstore is not None,
+        "rag_error": _rag_error,
+        "chroma_built_new": _built_new,
+    }
 
 
 @app.post("/speech-to-text")
@@ -203,7 +242,7 @@ def _handbook_no_context_reply(
 
 @app.post("/chat", response_model=ChatResponse)
 def chat(req: ChatRequest):
-    if _vectorstore is None or _llm is None:
+    if _llm is None:
         return JSONResponse(
             status_code=503,
             content={"detail": "Server is not ready yet. Try again in a few seconds."},
@@ -235,6 +274,18 @@ def chat(req: ChatRequest):
                 ChatMessage(user=req.message, assistant=conv_resp.answer)
             ]
         return conv_resp
+
+    _load_rag_sync()
+    if _rag_error and _vectorstore is None:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": f"Handbook index failed: {_rag_error}"},
+        )
+    if _vectorstore is None:
+        return JSONResponse(
+            status_code=503,
+            content={"detail": "Server is still building the handbook index. Try again in a few seconds."},
+        )
 
     # Retrieve handbook evidence for this question.
     # Step 1: Make the latest question standalone (helps follow-ups like "and exceptions?").

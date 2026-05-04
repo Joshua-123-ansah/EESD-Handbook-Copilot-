@@ -1,10 +1,18 @@
+/* ASU brand: Maroon #8C1D40, Gold #FFC627 — https://brandguide.asu.edu */
 :root {
-  --bg: #0b1220;
-  --panel: #111a2e;
-  --text: #e7eefc;
-  --muted: #a9b6d6;
-  --accent: #5aa2ff;
-  --border: rgba(255, 255, 255, 0.12);
+  --asu-maroon: #8c1d40;
+  --asu-maroon-deep: #5c142b;
+  --asu-maroon-dark: #2a0f16;
+  --asu-gold: #ffc627;
+  --asu-gold-dim: #e6b223;
+  --bg: #1f1218;
+  --panel: #2c1620;
+  --text: #faf6f2;
+  --muted: #d4c4cb;
+  --accent: var(--asu-gold);
+  --accent-on-gold: #1a0a10;
+  --border: rgba(255, 198, 39, 0.14);
+  --maroon-glow: rgba(140, 29, 64, 0.45);
 }
 
 * {
@@ -15,8 +23,9 @@ body {
   margin: 0;
   font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, "Apple Color Emoji",
     "Segoe UI Emoji";
-  background: linear-gradient(180deg, #070c16, var(--bg));
+  background: linear-gradient(180deg, var(--asu-maroon-dark) 0%, var(--bg) 45%, #150d12 100%);
   color: var(--text);
+  min-height: 100vh;
 }
 
 .app {
@@ -32,6 +41,19 @@ body {
   margin-bottom: 14px;
 }
 
+.portfolio-link {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--asu-gold);
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.portfolio-link:hover {
+  color: #ffe066;
+  text-decoration: underline;
+}
+
 .brand {
   display: flex;
   gap: 12px;
@@ -42,12 +64,14 @@ body {
   width: 12px;
   height: 12px;
   border-radius: 50%;
-  background: var(--accent);
+  background: var(--asu-gold);
+  box-shadow: 0 0 0 2px rgba(255, 198, 39, 0.35);
 }
 
 .title {
   font-weight: 700;
   font-size: 16px;
+  color: var(--text);
 }
 
 .subtitle {
@@ -58,10 +82,11 @@ body {
 
 .chat {
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid rgba(140, 29, 64, 0.35);
   border-radius: 16px;
   min-height: 58vh;
   padding: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
 }
 
 .messages {
@@ -85,7 +110,7 @@ body {
 
 .bubble {
   flex: 1;
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 14px;
   padding: 10px 12px;
@@ -93,7 +118,8 @@ body {
 }
 
 .bubble.user {
-  border-color: rgba(90, 162, 255, 0.35);
+  border-color: rgba(255, 198, 39, 0.45);
+  box-shadow: inset 0 0 0 1px rgba(140, 29, 64, 0.2);
 }
 
 .meta {
@@ -106,7 +132,8 @@ body {
   margin-top: 6px;
   padding: 8px 10px;
   border-radius: 12px;
-  border: 1px dashed rgba(90, 162, 255, 0.35);
+  border: 1px dashed rgba(255, 198, 39, 0.4);
+  background: rgba(140, 29, 64, 0.15);
 }
 
 .composer {
@@ -128,13 +155,13 @@ body {
   width: 84px;
   height: 84px;
   border-radius: 24px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(140, 29, 64, 0.35);
+  border: 1px solid rgba(255, 198, 39, 0.25);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  color: var(--accent);
+  color: var(--asu-gold);
 }
 
 .avatar-label {
@@ -152,30 +179,51 @@ input[type="text"] {
   width: 100%;
   padding: 12px 12px;
   border-radius: 14px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(255, 198, 39, 0.2);
+  background: rgba(0, 0, 0, 0.25);
   color: var(--text);
   outline: none;
+}
+
+input[type="text"]:focus {
+  border-color: var(--asu-gold);
+  box-shadow: 0 0 0 2px rgba(255, 198, 39, 0.2);
 }
 
 button {
   border: 0;
   border-radius: 14px;
   padding: 12px 16px;
-  background: var(--accent);
-  color: #071025;
+  background: var(--asu-gold);
+  color: var(--accent-on-gold);
   font-weight: 700;
   cursor: pointer;
 }
 
+button:hover {
+  background: var(--asu-gold-dim);
+}
+
+button:focus-visible {
+  outline: 2px solid var(--asu-gold);
+  outline-offset: 2px;
+}
+
 .mic-btn {
-  background: #233150;
+  background: var(--asu-maroon-deep);
+  color: var(--text);
+  border: 1px solid rgba(255, 198, 39, 0.25);
+}
+
+.mic-btn:hover {
+  background: var(--asu-maroon);
   color: var(--text);
 }
 
 .mic-btn.recording {
-  background: #db475f;
+  background: #b82e52;
   color: #fff;
+  border-color: transparent;
 }
 
 .hint {
@@ -189,4 +237,3 @@ button {
     grid-template-columns: 1fr;
   }
 }
-
