@@ -1,5 +1,7 @@
 # EESD Handbook RAG Chat (Demo)
 
+Created by **Joshua Owusu Ansah**.
+
 This project provides a conversational chatbot for the `EESD_Handbook_2024-2025AY-FINAL.pdf`.
 It uses a RAG pipeline:
 

@@ -80,7 +80,7 @@ async def _lifespan(_app: FastAPI):
     yield
 
 
-app = FastAPI(title="EESD Handbook RAG Chatbot", version="0.1.0", lifespan=_lifespan)
+app = FastAPI(title="EESD Handbook Copilot by Joshua Owusu Ansah", version="0.1.0", lifespan=_lifespan)
 
 # If you later host frontend separately, this allows the browser to call the API.
 app.add_middleware(
